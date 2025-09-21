@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ruleta Eliminatoria</title>
+</head>
+<body>
+  <h1>🎯 Ruleta eliminatoria</h1>
+  <p>Haz clic en Girar para probar.</p>
+
+  <!-- Canvas -->
+  <canvas id="wheel" width="400" height="400" style="border:1px solid #ccc;"></canvas>
+  <button id="spinBtn">🎰 Girar</button>
+  <div id="winnerText"></div>
+
+  <!-- Audios -->
+  <audio id="loseSound" src="trompeta_perdedor.mp3" preload="auto"></audio>
+  <audio id="winSound" src="fanfarrias_victoria.mp3" preload="auto"></audio>
+
+  <script>
+    const wheel = document.getElementById('wheel');
+    const ctx = wheel.getContext('2d');
+    const items = ['A','B','C','D'];
+    let angle = 0;
+    function draw() {
+      ctx.clearRect(0,0,wheel.width,wheel.height);
+      const slice = 2*Math.PI/items.length;
+      for(let i=0;i<items.length;i++){
+        ctx.beginPath();
+        ctx.moveTo(200,200);
+        ctx.arc(200,200,200,i*slice+angle,(i+1)*slice+angle);
+        ctx.fillStyle = `hsl(${i*360/items.length},70%,60%)`;
+        ctx.fill();
+        ctx.stroke();
+        ctx.save();
+        ctx.translate(200,200);
+        ctx.rotate(i*slice+slice/2+angle);
+        ctx.textAlign='right';
+        ctx.fillStyle='black';
+        ctx.fillText(items[i],180,10);
+        ctx.restore();
+      }
+    }
+    draw();
+    function playSound(id){
+      const el=document.getElementById(id);
+      if(el){el.currentTime=0;el.play();}
+    }
+    document.getElementById('spinBtn').onclick=()=>{
+      const winner = Math.floor(Math.random()*items.length);
+      document.getElementById('winnerText').textContent='Ganador: '+items[winner];
+      if(items.length===1){ playSound('winSound'); }
+      else { playSound('loseSound'); }
+      items.splice(winner,1);
+      angle=0;
+      draw();
+    };
+  </script>
+</body>
+</html>
